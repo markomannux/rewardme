@@ -1,0 +1,7 @@
+{
+  "name": "rewardme",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
