@@ -2,7 +2,7 @@ import React from 'react';
 import { IonLabel, IonItem, IonIcon } from '@ionic/react';
 
 interface TaskListItemProps {
-    id: string
+    id?: string
     name: string
     icon: string
 }

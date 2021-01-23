@@ -5,8 +5,8 @@ import AchievementService from '../services/achievement-service';
 import { RouteComponentProps, useHistory } from 'react-router';
 import Task from '../model/Task';
 import Reward from '../model/Reward';
-import { v4 as uuidv4 } from 'uuid';
 import RewardCard from '../components/RewardCard';
+import RewardService from '../services/reward-service';
 
 interface CompleteTaskProps extends RouteComponentProps<{
   id: string
@@ -16,7 +16,9 @@ const CompleteTask: React.FC<CompleteTaskProps> = ({match}) => {
 
   const taskService = TaskService()
   const history = useHistory();
+  const [rewards, setRewards] = useState<Reward[]>()
   const achievementService = AchievementService()
+  const rewardService = RewardService()
   let [task, setTask] = useState<Task>()
 
   useEffect(() => {
@@ -31,12 +33,28 @@ const CompleteTask: React.FC<CompleteTaskProps> = ({match}) => {
     getTask()
   }, [])
 
+  useEffect(() => {
+    const getRewards = () => {
+        rewardService.list()
+        .then(result => {
+            setRewards(result)
+        },
+        err => console.log(err));
+    }
+    const handler = () => getRewards()
+    rewardService.on('item:added', handler)
+    
+    getRewards()
+
+    return () => {
+      rewardService.off('item:added', handler)
+    }
+  }, [])
+
 
   const handleRewardTap = (task: Task, reward: Reward) => {
     const now = new Date()
-    const id = uuidv4()
     const achievement = {
-      id: id,
       task,
       reward,
       date: `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`,
@@ -74,9 +92,9 @@ const CompleteTask: React.FC<CompleteTaskProps> = ({match}) => {
           </IonCardContent>
         </IonCard>
         <IonItem>
-          Choose one
+          Choose one suitable reward
         </IonItem>
-        {task?.possibleRewards.map((reward) => {
+        {rewards?.map((reward) => {
           return <RewardCard key={reward.id} reward={reward} onPress={() => {
               if (task) {
                 handleRewardTap(task, reward)

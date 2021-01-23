@@ -1,5 +1,5 @@
 export default interface Reward {
-    id: string;
+    id?: string;
     icon: string;
     name: string;
 }

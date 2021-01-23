@@ -37,20 +37,12 @@ const Settings: React.FC = () => {
     const task1 = {
           id: '1',
           icon: book,
-          name: 'Studying 1 hour',
-          possibleRewards: [
-            reward1,
-            reward2
-          ]
+          name: 'Studying 1 hour'
         }
     const task2 = {
           id: '2',
           icon: water,
-          name: 'Cleaning the kitchen',
-          possibleRewards: [
-            reward1,
-            reward3
-          ]
+          name: 'Cleaning the kitchen'
         }
         
     await taskService.addAll([

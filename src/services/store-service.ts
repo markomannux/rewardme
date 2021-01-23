@@ -1,9 +1,10 @@
 import EventEmitter from 'events';
 import { openDB } from 'idb'
 import { DB_USERDATA } from './database-service';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Storable {
-    id: string
+    id?: string
 }
 
 export default class StoreService<T extends Storable> extends EventEmitter {
@@ -27,8 +28,9 @@ export default class StoreService<T extends Storable> extends EventEmitter {
 
     add = async (item: T) => {
         const db1 = await openDB(DB_USERDATA, 1);
+        item.id = uuidv4()
         db1.add(this.storeName, item, item.id)
-        this.emit(`${this.storeName}:added`)
+        this.emit(`item:added`)
         db1.close();
     }
 
