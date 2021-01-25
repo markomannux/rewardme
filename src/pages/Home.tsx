@@ -21,6 +21,13 @@ const Tab1: React.FC = () => {
     const getAchievements = () => {
       achievementService.list()
       .then(result => {
+        return result.sort((a, b) => {
+          if (b.date < a.date) return -1
+          else if (a.date === b.date) return 0
+          else return 1
+        })
+      })
+      .then(result => {
         setAchievements(result)
       },
       err => console.log(err))
@@ -45,7 +52,13 @@ const Tab1: React.FC = () => {
       err => console.log(err))
     }
 
+    const handler = () => getTasks()
+    taskService.on('item:added', handler)
     getTasks()
+
+    return () => {
+      taskService.off('item:added', handler)
+    }
   }, [])
 
   return (
@@ -63,7 +76,7 @@ const Tab1: React.FC = () => {
         </IonHeader>
 
         <IonCard>
-          {tasks.map(task => <TaskListItem {...task}/>)} 
+          {tasks.map(task => <TaskListItem key={task.id} {...task}/>)} 
         </IonCard>
 
         <IonItem>

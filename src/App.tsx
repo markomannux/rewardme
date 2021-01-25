@@ -35,6 +35,8 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import CompleteTask from './pages/CompleteTask';
 import { init } from './services/database-service'
+import SpendRewards from './pages/SpendRewards';
+import Tasks from './pages/Tasks';
 
 init()
 
@@ -45,8 +47,10 @@ const App: React.FC = () => (
         <IonRouterOutlet>
           <Route path="/home" component={Home} exact={true} />
           <Route path="/home/complete/:id" component={CompleteTask} exact={true} />
-          <Route path="/rewards" component={Rewards} exact={true} />
-          <Route path="/tab3" component={Settings} />
+          <Route path="/settings" component={Settings} exact={true} />
+          <Route path="/rewards" component={SpendRewards} exact={true} />
+          <Route path="/settings/tasks" component={Tasks} exact={true} />
+          <Route path="/settings/rewards" component={Rewards} exact={true} />
           <Route path="/" render={() => <Redirect to="/home" />} exact={true} />
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
@@ -58,7 +62,7 @@ const App: React.FC = () => (
             <IonIcon icon={trophy} />
             <IonLabel>Rewards</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
+          <IonTabButton tab="tab3" href="/settings">
             <IonIcon icon={settings} />
             <IonLabel>Settings</IonLabel>
           </IonTabButton>

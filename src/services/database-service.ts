@@ -8,7 +8,9 @@ const DB_USERDATA = 'userdata'
 const init = async () => {
     const db1 = await openDB(DB_USERDATA, 1, {
         upgrade(db) {
-            db.createObjectStore(STORE_ACHIEVEMENTS)
+            const achievementStore = db.createObjectStore(STORE_ACHIEVEMENTS)
+            achievementStore.createIndex('spentIndex', 'spent')
+            achievementStore.createIndex('dateIndex', 'date')
             db.createObjectStore(STORE_TASKS)
             db.createObjectStore(STORE_REWARDS)
         }

@@ -31,7 +31,7 @@ const CompleteTask: React.FC<CompleteTaskProps> = ({match}) => {
     }
     
     getTask()
-  }, [])
+  }, [match.params.id])
 
   useEffect(() => {
     const getRewards = () => {
@@ -53,10 +53,12 @@ const CompleteTask: React.FC<CompleteTaskProps> = ({match}) => {
 
 
   const handleRewardTap = (task: Task, reward: Reward) => {
+    console.log(task)
     const now = new Date()
     const achievement = {
       task,
       reward,
+      spent: 'n',
       date: `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`,
     }
     achievementService.add(achievement)

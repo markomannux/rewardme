@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonContent, IonHeader, IonItem, IonList, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import { book, water, fastFood} from 'ionicons/icons';
 import './Settings.css';
 import AchievementService from '../services/achievement-service';
@@ -55,13 +55,15 @@ const Settings: React.FC = () => {
         id: '1',
         date: '10/01/2021 10:20',
         task: task1,
-        reward: reward1
+        reward: reward1,
+        spent: 'y'
     },       
     {
         id: '2',
         date: '10/01/2021 11:50',
         task: task2,
-        reward: reward3
+        reward: reward3,
+        spent: 'n'
     }
     ])
 
@@ -87,6 +89,14 @@ const Settings: React.FC = () => {
         </IonHeader>
         <IonButton expand="block" onClick={clearDb}>Clear db</IonButton>
         <IonButton expand="block" onClick={initDb}>Init db</IonButton>
+        <IonList>
+          <IonItem routerLink="/settings/tasks">
+            Setup tasks
+          </IonItem>
+          <IonItem routerLink="/settings/rewards">
+            Setup rewards
+          </IonItem>
+        </IonList>
       </IonContent>
     </IonPage>
   );

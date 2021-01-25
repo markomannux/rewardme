@@ -6,4 +6,5 @@ export default interface Achievement {
     date: string;
     task: Task;
     reward: Reward;
+    spent: string;
 }

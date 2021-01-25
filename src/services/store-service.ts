@@ -16,18 +16,27 @@ export default class StoreService<T extends Storable> extends EventEmitter {
         this.storeName = storeName 
     }
 
+    open = async () => {
+        return await openDB(DB_USERDATA, 1)
+    }
+
     list = async () : Promise<T[]> => {
-        const db1 = await openDB(DB_USERDATA, 1);
+        const db1 = await this.open();
         return db1.getAll(this.storeName)
     }
 
+    listFromIndex = async (indexName: string, value: any) : Promise<T[]> => {
+        const db1 = await this.open();
+        return db1.getAllFromIndex(this.storeName, indexName, value)
+    }
+
     get = async (id: string) : Promise<T> => {
-        const db1 = await openDB(DB_USERDATA, 1);
+        const db1 = await this.open();
         return db1.get(this.storeName, id)
     }
 
     add = async (item: T) => {
-        const db1 = await openDB(DB_USERDATA, 1);
+        const db1 = await this.open();
         item.id = uuidv4()
         db1.add(this.storeName, item, item.id)
         this.emit(`item:added`)
@@ -35,7 +44,7 @@ export default class StoreService<T extends Storable> extends EventEmitter {
     }
 
     addAll = async (items: T[]) => {
-        const db1 = await openDB(DB_USERDATA, 1);
+        const db1 = await this.open();
 
         for (const item of items) {
             db1.add(this.storeName, item, item.id)    
