@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import RewardCard from '../components/RewardCard';
+import { IonAlert, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import AchievementService from '../services/achievement-service';
-import RewardService from '../services/reward-service';
-import Achievement from '../model/Achievement';
+import Reward from '../model/Reward';
+import RewardItem from '../components/RewardItem';
 
 const SpendRewards: React.FC = () => {
 
-  const rewardService = RewardService()
   const achievementService = AchievementService()
-  const [rewards, setRewards] = useState<Achievement[]>()
-
+  const [rewards, setRewards] = useState<[Reward, number][]>()
+  const [showAlert, setShowAlert] = useState(false)
+  const [selectedReward, setSelectedReward] = useState<Reward>()
 
   useEffect(() => {
     const getSpendableRewards = () => {
@@ -22,33 +21,81 @@ const SpendRewards: React.FC = () => {
     }
     const handler = () => getSpendableRewards()
     achievementService.on('item:added', handler)
+    achievementService.on('item:updated', handler)
     
     getSpendableRewards()
 
     return () => {
-      rewardService.off('item:added', handler)
+      achievementService.off('item:added', handler)
+      achievementService.off('item:updated', handler)
     }
   }, [])
+
+  const spendReward = (reward: Reward) => {
+    achievementService.spendReward(reward)
+  }
+
+  const rewardsList = () => {
+    if (rewards?.length !== 0) {
+        return rewards?.map(rewardTuple => {
+          let [reward, count] = rewardTuple
+          return <RewardItem key={reward.id} reward={reward} count={count} onPress={() => {
+            setSelectedReward(reward)
+            setShowAlert(true)
+          }}></RewardItem>
+        })
+    } else {
+      return <IonCard>
+          <img src='assets/spider.jpg' />
+          <IonCardHeader>
+            <IonCardSubtitle>Sorry</IonCardSubtitle>
+            <IonCardTitle>Nothing here</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+          It seems there are no rewards available <span role="img" aria-label="sad">😢</span><br/>
+          Complete some tasks and enjoy your reward!
+          </IonCardContent>
+        </IonCard>
+    }
+  }
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Rewards</IonTitle>
+          <IonTitle>Available Rewards</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Rewards</IonTitle>
+            <IonTitle size="large">Available Rewards</IonTitle>
           </IonToolbar>
         </IonHeader>
-        {rewards?.map((reward) => {
-          return <RewardCard key={reward.id} reward={reward.reward} onPress={() => {
-          }}></RewardCard>
-        })}
+        {rewardsList()}
+         <IonAlert
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          cssClass='my-custom-class'
+          header={'Spend reward'}
+          subHeader={selectedReward?.name}
+          message={'Do you want to spend your reward? You earned it!'}
+          buttons={[{
+            text: "Nope",
+            role: 'cancel'
+          },
+          {
+            text: "Yes, please!",
+            handler: () => {
+              if (selectedReward) {
+                spendReward(selectedReward)
+              }
+            }
+          }]}
+        />
          
       </IonContent>
+      <a href="https://www.vecteezy.com/free-vector/spider-web">Spider Web Vectors by Vecteezy</a>
     </IonPage>
   );
 };

@@ -11,6 +11,7 @@ const init = async () => {
             const achievementStore = db.createObjectStore(STORE_ACHIEVEMENTS)
             achievementStore.createIndex('spentIndex', 'spent')
             achievementStore.createIndex('dateIndex', 'date')
+            achievementStore.createIndex('rewardSpentIndex', ['reward.id', 'spent'])
             db.createObjectStore(STORE_TASKS)
             db.createObjectStore(STORE_REWARDS)
         }

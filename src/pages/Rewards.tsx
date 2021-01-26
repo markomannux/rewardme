@@ -23,11 +23,13 @@ const Rewards: React.FC = () => {
     }
     const handler = () => getRewards()
     rewardService.on('item:added', handler)
+    rewardService.on('item:updated', handler)
     
     getRewards()
 
     return () => {
       rewardService.off('item:added', handler)
+      rewardService.off('item:updated', handler)
     }
   }, [])
 

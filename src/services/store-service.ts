@@ -51,4 +51,11 @@ export default class StoreService<T extends Storable> extends EventEmitter {
         }
         db1.close();
     }
+
+    update = async (item: T) => {
+        const db1 = await this.open();
+        db1.put(this.storeName, item, item.id)
+        this.emit(`item:updated`)
+        db1.close();
+    }
 }
