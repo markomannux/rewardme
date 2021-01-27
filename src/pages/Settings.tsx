@@ -53,14 +53,16 @@ const Settings: React.FC = () => {
     await achievementService.addAll([
     {
         id: '1',
-        date: '10/01/2021 10:20',
+        date: new Date(),
+        //date: '10/01/2021 10:20',
         task: task1,
         reward: reward1,
         spent: 'y'
     },       
     {
         id: '2',
-        date: '10/01/2021 11:50',
+        date: new Date(),
+        //date: '10/01/2021 11:50',
         task: task2,
         reward: reward3,
         spent: 'n'

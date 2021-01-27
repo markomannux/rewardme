@@ -3,7 +3,7 @@ import Task from "./Task";
 
 export default interface Achievement {
     id?: string;
-    date: string;
+    date: Date;
     task: Task;
     reward: Reward;
     spent: string;

@@ -59,7 +59,8 @@ const CompleteTask: React.FC<CompleteTaskProps> = ({match}) => {
       task,
       reward,
       spent: 'n',
-      date: `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`,
+      date: now
+      //date: `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`,
     }
     achievementService.add(achievement)
     .then(() => {

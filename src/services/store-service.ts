@@ -58,4 +58,13 @@ export default class StoreService<T extends Storable> extends EventEmitter {
         this.emit(`item:updated`)
         db1.close();
     }
+
+    delete = async (item: T) => {
+        const db1 = await this.open();
+        if (item.id) {
+            await db1.delete(this.storeName, item.id)
+            this.emit(`item:deleted`)
+        }
+        db1.close();
+    }
 }

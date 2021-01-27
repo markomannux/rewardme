@@ -9,6 +9,7 @@ const Rewards: React.FC = () => {
 
   const rewardService = RewardService()
   const [rewards, setRewards] = useState<Reward[]>()
+  const [selectedReward, setSelectedReward] = useState<Reward>()
   const [showModal, setShowModal] = useState(false);
   const [rewardNameInput, setRewardNameInput] = useState<string | null>()
 
@@ -24,12 +25,14 @@ const Rewards: React.FC = () => {
     const handler = () => getRewards()
     rewardService.on('item:added', handler)
     rewardService.on('item:updated', handler)
+    rewardService.on('item:deleted', handler)
     
     getRewards()
 
     return () => {
       rewardService.off('item:added', handler)
       rewardService.off('item:updated', handler)
+      rewardService.off('item:deleted', handler)
     }
   }, [])
 
@@ -37,13 +40,42 @@ const Rewards: React.FC = () => {
     if (!rewardNameInput) {
       return
     }
-    const reward: Reward = {
-      name: rewardNameInput,
-      icon: trophy
+
+    let reward: Reward | undefined = selectedReward
+    if (!reward) {
+      reward = {
+        name: rewardNameInput,
+        icon: trophy
+      }
     }
-    await rewardService.add(reward)
+    reward.name = rewardNameInput
+    
+    if (reward.id) {
+      await rewardService.update(reward)
+    }
+    else await rewardService.add(reward)
+    setSelectedReward(undefined)
     setRewardNameInput(null)
     setShowModal(false)
+  }
+
+  const deleteReward = async () => {
+    
+    if(selectedReward) {
+      await rewardService.delete(selectedReward)
+    }
+    
+    setSelectedReward(undefined)
+    setRewardNameInput(null)
+    setShowModal(false)
+  }
+
+  let buttons
+  if (selectedReward) {
+    buttons = [<IonButton onClick={() => addReward()} expand="block">Update</IonButton>,
+               <IonButton color="danger" onClick={() => deleteReward()} expand="block">Delete</IonButton>]
+  } else {
+    buttons = <IonButton onClick={() => addReward()} expand="block">Add</IonButton>
   }
 
   return (
@@ -61,6 +93,9 @@ const Rewards: React.FC = () => {
         </IonHeader>
         {rewards?.map((reward) => {
           return <RewardCard key={reward.id} reward={reward} onPress={() => {
+            setSelectedReward(reward)
+            setRewardNameInput(reward.name)
+            setShowModal(true)
           }}></RewardCard>
         })}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
@@ -73,7 +108,12 @@ const Rewards: React.FC = () => {
             <IonToolbar>
               <IonTitle>Add a Reward</IonTitle>
               <IonButtons slot="end">
-                <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
+                <IonButton onClick={() => {
+                    setSelectedReward(undefined)
+                    setRewardNameInput(null)
+                    setShowModal(false)
+                  }
+                }>Close</IonButton>
               </IonButtons>
             </IonToolbar>
           </IonHeader>
@@ -84,7 +124,7 @@ const Rewards: React.FC = () => {
                 <IonInput value={rewardNameInput} required={true} onIonChange={e => setRewardNameInput(e.detail.value)}> </IonInput>
               </IonItem>
             </IonList>
-            <IonButton onClick={() => addReward()} expand="block">Add</IonButton>
+            {buttons}
           </IonContent>
         </IonModal>
       </IonContent>

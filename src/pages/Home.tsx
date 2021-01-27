@@ -35,11 +35,13 @@ const Tab1: React.FC = () => {
 
     const handler = () => getAchievements()
     achievementService.on('item:added', handler)
+    achievementService.on('item:updated', handler)
     getAchievements()
 
 
     return () => {
       achievementService.off('item:added', handler)
+      achievementService.off('item:updated', handler)
     }
   }, [])
 
