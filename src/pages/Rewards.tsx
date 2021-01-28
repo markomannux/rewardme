@@ -34,7 +34,13 @@ const Rewards: React.FC = () => {
       rewardService.off('item:updated', handler)
       rewardService.off('item:deleted', handler)
     }
-  }, [])
+  }, [rewardService])
+
+  const clearModal = () => {
+    setSelectedReward(undefined)
+    setRewardNameInput(null)
+    setShowModal(false)
+  }
 
   const addReward = async () => {
     if (!rewardNameInput) {
@@ -50,24 +56,15 @@ const Rewards: React.FC = () => {
     }
     reward.name = rewardNameInput
     
-    if (reward.id) {
-      await rewardService.update(reward)
-    }
-    else await rewardService.add(reward)
-    setSelectedReward(undefined)
-    setRewardNameInput(null)
-    setShowModal(false)
+    await rewardService.upsert(reward)
+    clearModal()
   }
 
   const deleteReward = async () => {
-    
     if(selectedReward) {
       await rewardService.delete(selectedReward)
     }
-    
-    setSelectedReward(undefined)
-    setRewardNameInput(null)
-    setShowModal(false)
+    clearModal()
   }
 
   let buttons
@@ -109,9 +106,7 @@ const Rewards: React.FC = () => {
               <IonTitle>Add a Reward</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => {
-                    setSelectedReward(undefined)
-                    setRewardNameInput(null)
-                    setShowModal(false)
+                    clearModal()
                   }
                 }>Close</IonButton>
               </IonButtons>

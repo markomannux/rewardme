@@ -53,7 +53,6 @@ const CompleteTask: React.FC<CompleteTaskProps> = ({match}) => {
 
 
   const handleRewardTap = (task: Task, reward: Reward) => {
-    console.log(task)
     const now = new Date()
     const achievement = {
       task,

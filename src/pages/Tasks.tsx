@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonModal, IonPage, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import Task from '../model/Task';
 import TaskCard from '../components/TaskCard';
 import TaskService from '../services/task-service';
-import { add, trophy } from 'ionicons/icons';
+import { add, trophy, book, water } from 'ionicons/icons';
 
 const Tasks: React.FC = () => {
 
   const taskService = TaskService()
   const [tasks, setTasks] = useState<Task[]>()
+  const [selectedTask, setSelectedTask] = useState<Task>()
   const [showModal, setShowModal] = useState(false);
   const [taskNameInput, setTaskNameInput] = useState<string | null>()
+  const [taskIconInput, setTaskIconInput] = useState<string>(book)
 
 
   useEffect(() => {
@@ -23,25 +25,58 @@ const Tasks: React.FC = () => {
     }
     const handler = () => getTasks()
     taskService.on('item:added', handler)
+    taskService.on('item:updated', handler)
+    taskService.on('item:deleted', handler)
     
     getTasks()
 
     return () => {
       taskService.off('item:added', handler)
+      taskService.off('item:updated', handler)
+      taskService.off('item:updated', handler)
     }
   }, [])
+
+  const clearModal = () => {
+    setSelectedTask(undefined)
+    setTaskNameInput(null)
+    setShowModal(false)
+  }
 
   const addTask = async () => {
     if (!taskNameInput) {
       return
     }
-    const task: Task = {
-      name: taskNameInput,
-      icon: trophy
+
+    let task: Task | undefined = selectedTask
+    if (!task) {
+      task = {
+        name: taskNameInput,
+        icon: taskIconInput
+      }
     }
-    await taskService.add(task)
-    setTaskNameInput(null)
-    setShowModal(false)
+    task.name = taskNameInput
+    task.icon = taskIconInput
+
+    await taskService.upsert(task)
+    clearModal()
+  }
+
+  const deleteTask = async () => {
+    
+    if(selectedTask) {
+      await taskService.delete(selectedTask)
+    }
+    
+    clearModal()
+  }
+
+  let buttons
+  if (selectedTask) {
+    buttons = [<IonButton onClick={() => addTask()} expand="block">Update</IonButton>,
+               <IonButton color="danger" onClick={() => deleteTask()} expand="block">Delete</IonButton>]
+  } else {
+    buttons = <IonButton onClick={() => addTask()} expand="block">Add</IonButton>
   }
 
   return (
@@ -59,6 +94,9 @@ const Tasks: React.FC = () => {
         </IonHeader>
         {tasks?.map((task) => {
           return <TaskCard key={task.id} task={task} onPress={() => {
+            setSelectedTask(task)
+            setTaskNameInput(task.name)
+            setShowModal(true)
           }}></TaskCard>
         })}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
@@ -71,7 +109,9 @@ const Tasks: React.FC = () => {
             <IonToolbar>
               <IonTitle>Add a Task</IonTitle>
               <IonButtons slot="end">
-                <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
+                <IonButton onClick={() => 
+                  clearModal()
+                }>Close</IonButton>
               </IonButtons>
             </IonToolbar>
           </IonHeader>
@@ -81,8 +121,28 @@ const Tasks: React.FC = () => {
                 <IonLabel position="stacked">Name</IonLabel>
                 <IonInput value={taskNameInput} required={true} onIonChange={e => setTaskNameInput(e.detail.value)}> </IonInput>
               </IonItem>
+              <IonRadioGroup value={taskIconInput} onIonChange={e => setTaskIconInput(e.detail.value)}>
+                <IonListHeader>
+                  <IonLabel></IonLabel>
+                </IonListHeader>
+
+                <IonItem>
+                  <IonLabel><IonIcon icon={book}/></IonLabel>
+                  <IonRadio slot="end" value={book} />
+                </IonItem>
+
+                <IonItem>
+                  <IonLabel><IonIcon icon={water}/></IonLabel>
+                  <IonRadio slot="end" value={water} />
+                </IonItem>
+
+                <IonItem>
+                  <IonLabel><IonIcon icon={add}/></IonLabel>
+                  <IonRadio slot="end" value={add} />
+                </IonItem>
+              </IonRadioGroup>
             </IonList>
-            <IonButton onClick={() => addTask()} expand="block">Add</IonButton>
+            {buttons}
           </IonContent>
         </IonModal>
       </IonContent>

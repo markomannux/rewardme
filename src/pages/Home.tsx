@@ -56,10 +56,12 @@ const Tab1: React.FC = () => {
 
     const handler = () => getTasks()
     taskService.on('item:added', handler)
+    taskService.on('item:updated', handler)
     getTasks()
 
     return () => {
       taskService.off('item:added', handler)
+      taskService.off('item:updated', handler)
     }
   }, [])
 
