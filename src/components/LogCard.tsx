@@ -6,7 +6,8 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardSubtitle,
-  IonCardTitle
+  IonCardTitle,
+  IonItem
 } from '@ionic/react';
 import Achievement from '../model/Achievement';
 import './LogCard.css';
@@ -15,24 +16,32 @@ const formatDate = (date: Date) => {
   return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
 }
 
-const LogCard: React.FC<Achievement> = ({date, task, reward, spent}) => {
+interface LogCardProps {
+  achievement: Achievement
+  onPressDelete: Function
+}
+
+const LogCard: React.FC<LogCardProps> = ({achievement, onPressDelete}) => {
 
   let stamp
-  if (spent === 'y') {
-    stamp = <div className="stamp">spent</div>
+  if (achievement.spent === 'y') {
+    stamp = <img src="/assets/stamp.png" className="stamp"></img>
   }
 
   return (
    <IonCard>
         <IonCardHeader>
-            <IonCardSubtitle>{formatDate(date)}</IonCardSubtitle>
+            <IonCardSubtitle>{formatDate(achievement.date)}</IonCardSubtitle>
             <IonCardTitle>
-              {task.name}
+              {achievement.task.name}
             </IonCardTitle>
-            <IonIcon icon={task.icon} slot="start" />
+            <IonIcon icon={achievement.task.icon} slot="start" />
         </IonCardHeader>
         <IonButton fill="outline" slot="end">Delete</IonButton>
-      <IonCardContent>Your reward: {reward.name}</IonCardContent>
+      <IonCardContent>Your reward: {achievement.reward.name}</IonCardContent>
+      <IonItem lines="none">
+        <IonButton fill="outline" color="danger" slot="start" onClick={() => onPressDelete()}>Delete</IonButton>
+      </IonItem>
       {stamp}
     </IonCard>
   );

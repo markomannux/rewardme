@@ -3,7 +3,7 @@ import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, Ion
 import Task from '../model/Task';
 import TaskCard from '../components/TaskCard';
 import TaskService from '../services/task-service';
-import { add, trophy, book, water } from 'ionicons/icons';
+import { add, bag, cart, hammer, barbell, walk, book, water } from 'ionicons/icons';
 
 const Tasks: React.FC = () => {
 
@@ -73,8 +73,8 @@ const Tasks: React.FC = () => {
 
   let buttons
   if (selectedTask) {
-    buttons = [<IonButton onClick={() => addTask()} expand="block">Update</IonButton>,
-               <IonButton color="danger" onClick={() => deleteTask()} expand="block">Delete</IonButton>]
+    buttons = [<IonButton key="button-add" onClick={() => addTask()} expand="block">Update</IonButton>,
+               <IonButton key="button-delete" color="danger" onClick={() => deleteTask()} expand="block">Delete</IonButton>]
   } else {
     buttons = <IonButton onClick={() => addTask()} expand="block">Add</IonButton>
   }
@@ -135,10 +135,25 @@ const Tasks: React.FC = () => {
                   <IonLabel><IonIcon icon={water}/></IonLabel>
                   <IonRadio slot="end" value={water} />
                 </IonItem>
-
                 <IonItem>
-                  <IonLabel><IonIcon icon={add}/></IonLabel>
-                  <IonRadio slot="end" value={add} />
+                  <IonLabel><IonIcon icon={bag}/></IonLabel>
+                  <IonRadio slot="end" value={bag} />
+                </IonItem>
+                <IonItem>
+                  <IonLabel><IonIcon icon={cart}/></IonLabel>
+                  <IonRadio slot="end" value={cart} />
+                </IonItem>
+                <IonItem>
+                  <IonLabel><IonIcon icon={hammer}/></IonLabel>
+                  <IonRadio slot="end" value={hammer} />
+                </IonItem>
+                <IonItem>
+                  <IonLabel><IonIcon icon={barbell}/></IonLabel>
+                  <IonRadio slot="end" value={barbell} />
+                </IonItem>
+                <IonItem>
+                  <IonLabel><IonIcon icon={walk}/></IonLabel>
+                  <IonRadio slot="end" value={walk} />
                 </IonItem>
               </IonRadioGroup>
             </IonList>

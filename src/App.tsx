@@ -37,6 +37,7 @@ import CompleteTask from './pages/CompleteTask';
 import { init } from './services/database-service'
 import SpendRewards from './pages/SpendRewards';
 import Tasks from './pages/Tasks';
+import InstaTask from './pages/InstaTask';
 
 init()
 
@@ -46,6 +47,7 @@ const App: React.FC = () => (
       <IonTabs>
         <IonRouterOutlet>
           <Route path="/home" component={Home} exact={true} />
+          <Route path="/home/instatask" component={InstaTask} exact={true} />
           <Route path="/home/complete/:id" component={CompleteTask} exact={true} />
           <Route path="/settings" component={Settings} exact={true} />
           <Route path="/rewards" component={SpendRewards} exact={true} />

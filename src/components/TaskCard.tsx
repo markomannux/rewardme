@@ -2,7 +2,9 @@ import React from 'react';
 import {
   IonCard,
   IonCardHeader,
-  IonCardTitle
+  IonCardTitle,
+  IonIcon,
+  IonLabel
 } from '@ionic/react';
 import Task from '../model/Task';
 
@@ -13,10 +15,11 @@ interface TaskCardProps {
 
 const TaskCard: React.FC<TaskCardProps> = ({task, onPress}) => {
   return (
-    <IonCard key={task.id} onClick={onPress}>
+    <IonCard onClick={onPress}>
         <IonCardHeader>
             <IonCardTitle>
-                {task.name}
+                <IonIcon icon={task.icon}></IonIcon>
+                <IonLabel>{task.name}</IonLabel>
             </IonCardTitle>
         </IonCardHeader>
     </IonCard>
