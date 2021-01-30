@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonItem, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonButton, IonIcon, IonLabel, IonAlert } from '@ionic/react';
 import LogCard from '../components/LogCard'
 import './Home.css';
@@ -8,69 +8,44 @@ import AchievementService from '../services/achievement-service';
 import TaskService from '../services/task-service'
 import Task from '../model/Task';
 import { flash } from 'ionicons/icons'
+import useStore from '../hooks/use-store-hook';
 
-const Tab1: React.FC = () => {
+const Home: React.FC = () => {
 
   const achievementService = AchievementService()
   const taskService = TaskService()
   const emptyAchievements: Achievement[] = []
-  let [achievements, setAchievements] = useState(emptyAchievements);
-  let [achievementToDelete, setAchievementToDelete] = useState<Achievement>();
   const emptyTasks: Task[] = []
-  let [tasks, setTasks] = useState(emptyTasks)
+  const [tasks, setTasks] = useState(emptyTasks)
+  const [achievements, setAchievements] = useState(emptyAchievements);
+  const [achievementToDelete, setAchievementToDelete] = useState<Achievement>();
   const [showAlert, setShowAlert] = useState(false)
 
-  useEffect(() => {
-    const getAchievements = () => {
-      achievementService.list()
-      .then(result => {
-        return result.sort((a, b) => {
-          if (b.date < a.date) return -1
-          else if (a.date === b.date) return 0
-          else return 1
-        })
+  const getAchievements = () => { 
+    achievementService.list()
+    .then(result => {
+      return result.sort((a, b) => {
+        if (b.date < a.date) return -1
+        else if (a.date === b.date) return 0
+        else return 1
       })
-      .then(result => {
-        setAchievements(result)
-      },
-      err => console.log(err))
-    }
+    })
+    .then(result => {
+      setAchievements(result)
+    },
+    err => console.log(err))
+  }
 
-    const handler = () => getAchievements()
-    achievementService.on('item:added', handler)
-    achievementService.on('item:updated', handler)
-    achievementService.on('item:deleted', handler)
-    getAchievements()
+  const getTasks = () => {
+    taskService.list()
+    .then(result => {
+      setTasks(result)
+    },
+    err => console.log(err))
+  }
 
-
-    return () => {
-      achievementService.off('item:added', handler)
-      achievementService.off('item:updated', handler)
-      achievementService.off('item:deleted', handler)
-    }
-  }, [])
-
-  useEffect(() => {
-    const getTasks = () => {
-      taskService.list()
-      .then(result => {
-        setTasks(result)
-      },
-      err => console.log(err))
-    }
-
-    const handler = () => getTasks()
-    taskService.on('item:added', handler)
-    taskService.on('item:updated', handler)
-    taskService.on('item:deleted', handler)
-    getTasks()
-
-    return () => {
-      taskService.off('item:added', handler)
-      taskService.off('item:updated', handler)
-      taskService.off('item:deleted', handler)
-    }
-  }, [])
+  useStore(achievementService, getAchievements)
+  useStore(taskService, getTasks)
 
   let taskList
   if (tasks.length > 0) {
@@ -156,4 +131,4 @@ const Tab1: React.FC = () => {
   );
 };
 
-export default Tab1;
+export default Home;

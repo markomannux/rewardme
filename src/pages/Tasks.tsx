@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonModal, IonPage, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import Task from '../model/Task';
 import TaskCard from '../components/TaskCard';
 import TaskService from '../services/task-service';
 import { add, bag, cart, hammer, barbell, walk, book, water } from 'ionicons/icons';
+import useStore from '../hooks/use-store-hook';
 
 const Tasks: React.FC = () => {
 
@@ -15,27 +16,14 @@ const Tasks: React.FC = () => {
   const [taskIconInput, setTaskIconInput] = useState<string>(book)
 
 
-  useEffect(() => {
-    const getTasks = () => {
+  useStore(taskService, () => {
         taskService.list()
         .then(result => {
             setTasks(result)
         },
         err => console.log(err));
     }
-    const handler = () => getTasks()
-    taskService.on('item:added', handler)
-    taskService.on('item:updated', handler)
-    taskService.on('item:deleted', handler)
-    
-    getTasks()
-
-    return () => {
-      taskService.off('item:added', handler)
-      taskService.off('item:updated', handler)
-      taskService.off('item:updated', handler)
-    }
-  }, [])
+  )
 
   const clearModal = () => {
     setSelectedTask(undefined)

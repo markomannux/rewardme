@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import Reward from '../model/Reward';
 import RewardCard from '../components/RewardCard';
 import RewardService from '../services/reward-service';
 import { add, trophy } from 'ionicons/icons';
+import useStore from '../hooks/use-store-hook';
 
 const Rewards: React.FC = () => {
 
@@ -13,28 +14,14 @@ const Rewards: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [rewardNameInput, setRewardNameInput] = useState<string | null>()
 
-
-  useEffect(() => {
-    const getRewards = () => {
+  useStore(rewardService, () => {
         rewardService.list()
         .then(result => {
             setRewards(result)
         },
         err => console.log(err));
     }
-    const handler = () => getRewards()
-    rewardService.on('item:added', handler)
-    rewardService.on('item:updated', handler)
-    rewardService.on('item:deleted', handler)
-    
-    getRewards()
-
-    return () => {
-      rewardService.off('item:added', handler)
-      rewardService.off('item:updated', handler)
-      rewardService.off('item:deleted', handler)
-    }
-  }, [rewardService])
+  )
 
   const clearModal = () => {
     setSelectedReward(undefined)

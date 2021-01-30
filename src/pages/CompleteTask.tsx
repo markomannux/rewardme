@@ -7,6 +7,7 @@ import Task from '../model/Task';
 import Reward from '../model/Reward';
 import RewardCard from '../components/RewardCard';
 import RewardService from '../services/reward-service';
+import useStore from '../hooks/use-store-hook';
 
 interface CompleteTaskProps extends RouteComponentProps<{
   id: string
@@ -33,24 +34,14 @@ const CompleteTask: React.FC<CompleteTaskProps> = ({match}) => {
     getTask()
   }, [match.params.id])
 
-  useEffect(() => {
-    const getRewards = () => {
+  useStore(rewardService, () => {
         rewardService.list()
         .then(result => {
             setRewards(result)
         },
         err => console.log(err));
     }
-    const handler = () => getRewards()
-    rewardService.on('item:added', handler)
-    
-    getRewards()
-
-    return () => {
-      rewardService.off('item:added', handler)
-    }
-  }, [])
-
+  )
 
   const handleRewardTap = (task: Task, reward: Reward) => {
     const now = new Date()

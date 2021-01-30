@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IonCard, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonPage, IonItem, IonTitle, IonToolbar, IonCardSubtitle, IonCardContent, IonLabel, IonInput, IonToast } from '@ionic/react';
-import TaskService from '../services/task-service';
 import AchievementService from '../services/achievement-service';
 import { RouteComponentProps, useHistory } from 'react-router';
 import Reward from '../model/Reward';
@@ -8,6 +7,7 @@ import RewardCard from '../components/RewardCard';
 import RewardService from '../services/reward-service';
 import { add } from 'ionicons/icons';
 import Task from '../model/Task';
+import useStore from '../hooks/use-store-hook';
 
 interface CompleteTaskProps extends RouteComponentProps<{
   id: string
@@ -15,7 +15,6 @@ interface CompleteTaskProps extends RouteComponentProps<{
 
 const InstaTask: React.FC<CompleteTaskProps> = ({match}) => {
 
-  const taskService = TaskService()
   const history = useHistory();
   const [rewards, setRewards] = useState<Reward[]>()
   const [showValidationToast, setShowValidationToast] = useState<boolean>(false)
@@ -23,24 +22,14 @@ const InstaTask: React.FC<CompleteTaskProps> = ({match}) => {
   const rewardService = RewardService()
   let [taskName, setTaskName] = useState<string|null|undefined>()
 
-  useEffect(() => {
-    const getRewards = () => {
+  useStore(rewardService, () => {
         rewardService.list()
         .then(result => {
             setRewards(result)
         },
         err => console.log(err));
     }
-    const handler = () => getRewards()
-    rewardService.on('item:added', handler)
-    
-    getRewards()
-
-    return () => {
-      rewardService.off('item:added', handler)
-    }
-  }, [])
-
+  )
 
   const handleRewardTap = (reward: Reward) => {
     if (!taskName) return

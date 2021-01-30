@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IonAlert, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import AchievementService from '../services/achievement-service';
 import Reward from '../model/Reward';
 import RewardItem from '../components/RewardItem';
+import useStore from '../hooks/use-store-hook';
 
 const SpendRewards: React.FC = () => {
 
@@ -11,25 +12,14 @@ const SpendRewards: React.FC = () => {
   const [showAlert, setShowAlert] = useState(false)
   const [selectedReward, setSelectedReward] = useState<Reward>()
 
-  useEffect(() => {
-    const getSpendableRewards = () => {
+  useStore(achievementService, () => {
         achievementService.spendableRewards()
         .then(result => {
             setRewards(result)
         },
         err => console.log(err));
     }
-    const handler = () => getSpendableRewards()
-    achievementService.on('item:added', handler)
-    achievementService.on('item:updated', handler)
-    
-    getSpendableRewards()
-
-    return () => {
-      achievementService.off('item:added', handler)
-      achievementService.off('item:updated', handler)
-    }
-  }, [])
+  )
 
   const spendReward = (reward: Reward) => {
     achievementService.spendReward(reward)
