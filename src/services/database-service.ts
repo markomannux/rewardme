@@ -1,5 +1,6 @@
 import { deleteDB, openDB } from 'idb'
 import { STORE_ACHIEVEMENTS } from './achievement-service'
+import { STORE_CONFIG } from './config-service'
 import { STORE_REWARDS } from './reward-service'
 import { STORE_TASKS } from './task-service'
 
@@ -14,6 +15,7 @@ const init = async () => {
             achievementStore.createIndex('rewardSpentIndex', ['reward.id', 'spent'])
             db.createObjectStore(STORE_TASKS)
             db.createObjectStore(STORE_REWARDS)
+            db.createObjectStore(STORE_CONFIG)
         }
     })
 

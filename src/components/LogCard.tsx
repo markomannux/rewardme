@@ -24,8 +24,11 @@ interface LogCardProps {
 const LogCard: React.FC<LogCardProps> = ({achievement, onPressDelete}) => {
 
   let stamp
+  const stampStyle = {
+    transform: `rotate(${achievement.graphics?.rotate}deg)`
+  }
   if (achievement.spent === 'y') {
-    stamp = <img src="/assets/stamp.png" className="stamp"></img>
+    stamp = <img src="/assets/stamp.png" className="stamp" style={stampStyle}></img>
   }
 
   return (

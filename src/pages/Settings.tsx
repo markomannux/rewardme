@@ -1,17 +1,37 @@
-import React from 'react';
-import { IonButton, IonContent, IonHeader, IonItem, IonList, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import React, { useState } from 'react';
+import { IonButton, IonContent, IonHeader, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToggle, IonToolbar } from '@ionic/react';
 import { book, water, fastFood} from 'ionicons/icons';
 import './Settings.css';
 import AchievementService from '../services/achievement-service';
 import TaskService from '../services/task-service';
 import RewardService from '../services/reward-service';
 import { init, clear } from '../services/database-service'
+import useStore from '../hooks/use-store-hook';
+import ConfigService from '../services/config-service'
 
 const Settings: React.FC = () => {
 
+  const configService = ConfigService()
   const taskService = TaskService()
   const achievementService = AchievementService()
   const rewardService = RewardService()
+  const [tutorial, setTutorial] = useState(false)
+
+  const tutorialCheckHandler = (checked: boolean) => {
+    setTutorial(checked)
+    configService.upsert({id: 'tutorial', value: checked? 'on':'off'})
+  }
+
+  useStore(configService, () => {
+    configService.get('tutorial')
+    .then(config => {
+      if (!config) {
+        setTutorial(true)
+      } else {
+        setTutorial(config.value === 'on')
+      }
+    })
+  })
 
   async function clearDb() {
     await clear()
@@ -97,6 +117,10 @@ const Settings: React.FC = () => {
           </IonItem>
           <IonItem routerLink="/settings/rewards">
             Setup rewards
+          </IonItem>
+          <IonItem>
+            <IonLabel>Tutorial</IonLabel>
+            <IonToggle checked={tutorial} onIonChange={e => tutorialCheckHandler(e.detail.checked)} />
           </IonItem>
         </IonList>
       </IonContent>

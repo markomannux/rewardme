@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { IonAlert, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonPage, IonTitle, IonToast, IonToolbar } from '@ionic/react';
 import AchievementService from '../services/achievement-service';
 import Reward from '../model/Reward';
 import RewardItem from '../components/RewardItem';
 import useStore from '../hooks/use-store-hook';
+import Achievement from '../model/Achievement';
+import useUndoAction from '../hooks/undo-action-hook';
 
 const SpendRewards: React.FC = () => {
 
@@ -11,6 +13,13 @@ const SpendRewards: React.FC = () => {
   const [rewards, setRewards] = useState<[Reward, number][]>()
   const [showAlert, setShowAlert] = useState(false)
   const [selectedReward, setSelectedReward] = useState<Reward>()
+  const [spentAchievement, setSpentAchievement] = useState<Achievement>()
+
+  const [shown, show, hide, undo] = useUndoAction(spentAchievement, (achievement: Achievement) => {
+    if (achievement) {
+      achievementService.unspendReward(achievement)
+    }
+  })
 
   useStore(achievementService, () => {
         achievementService.spendableRewards()
@@ -21,8 +30,13 @@ const SpendRewards: React.FC = () => {
     }
   )
 
-  const spendReward = (reward: Reward) => {
-    achievementService.spendReward(reward)
+  const spendReward = async (reward: Reward) => {
+    const spentAchievement = await achievementService.spendReward(reward)
+    if (spentAchievement) {
+      console.log(spentAchievement);
+      setSpentAchievement(spentAchievement)
+      show()
+    }
   }
 
   const rewardsList = () => {
@@ -85,6 +99,23 @@ const SpendRewards: React.FC = () => {
         />
          
       </IonContent>
+      <IonToast
+        isOpen={shown}
+        onDidDismiss={() => hide()}
+        message="Reward spent"
+        position="top"
+        duration={4000}
+        buttons={[
+          {
+            side: 'end',
+            text: 'Undo',
+            role: 'cancel',
+            handler: () => {
+              undo()
+            }
+          }
+        ]}
+      />
       <a href="https://www.vecteezy.com/free-vector/spider-web">Spider Web Vectors by Vecteezy</a>
     </IonPage>
   );

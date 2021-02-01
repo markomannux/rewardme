@@ -34,8 +34,19 @@ class AchievementService extends StoreService<Achievement> {
         if (reward.id) {
             const spendableAchievement = await index.get([reward.id, 'n'])
             spendableAchievement.spent = 'y'
+            spendableAchievement.graphics = {
+                rotate: Math.floor(Math.random()*60)-30
+            }
+
             this.update(spendableAchievement)
+            return spendableAchievement
         }
+    }
+
+    unspendReward = async (achievement: Achievement) => {
+        achievement.spent = 'n'
+        achievement.graphics = undefined
+        await this.update(achievement)
     }
 }
 

@@ -1,3 +1,4 @@
+import Graphics from "./Graphics";
 import Reward from "./Reward";
 import Task from "./Task";
 
@@ -7,4 +8,5 @@ export default interface Achievement {
     task: Task;
     reward: Reward;
     spent: string;
+    graphics?: Graphics;
 }

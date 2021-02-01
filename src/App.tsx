@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
+  IonButton,
+  IonContent,
   IonIcon,
   IonLabel,
   IonRouterOutlet,
+  IonSlide,
+  IonSlides,
   IonTabBar,
   IonTabButton,
   IonTabs
@@ -33,15 +37,71 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './pages/Tutorial.css'
 import CompleteTask from './pages/CompleteTask';
 import { init } from './services/database-service'
 import SpendRewards from './pages/SpendRewards';
 import Tasks from './pages/Tasks';
 import InstaTask from './pages/InstaTask';
+import ConfigService from './services/config-service'
+import useStore from './hooks/use-store-hook';
 
 init()
 
-const App: React.FC = () => (
+
+const App: React.FC = () => {
+  
+  const configService = ConfigService()
+  const [tutorial, setTutorial] = useState(true)
+
+  const dismissTutorial = () => {
+    setTutorial(false)
+    configService.upsert({id: 'tutorial', value: 'off'})
+  }
+
+  useStore(configService, () => {
+    configService.get('tutorial')
+    .then(config => {
+      if (!config) {
+        setTutorial(true)
+      } else {
+        setTutorial(config.value === 'on')
+      }
+    })
+  })
+
+  if (tutorial) {
+  const slideOpts = {
+    initialSlide: 0,
+    speed: 400
+  };
+    return (
+
+    <IonApp>
+        <IonContent fullscreen>
+            <IonSlides pager={true} options={slideOpts}>
+            <IonSlide>
+                <h1>Setup your tasks</h1>
+            </IonSlide>
+            <IonSlide>
+                <h1>Define some rewards for you</h1>
+            </IonSlide>
+            <IonSlide>
+                <h1>Complete tasks and earn rewards</h1>
+            </IonSlide>
+            <IonSlide>
+                <h1>Enjoy your rewards!</h1>
+                <IonButton onClick={(e) => dismissTutorial()}>Start</IonButton>
+            </IonSlide>
+            </IonSlides>
+        </IonContent>
+
+    </IonApp>
+    )
+  }
+
+
+  else return (
   <IonApp>
     <IonReactRouter>
       <IonTabs>
@@ -72,6 +132,6 @@ const App: React.FC = () => (
       </IonTabs>
     </IonReactRouter>
   </IonApp>
-);
+)};
 
 export default App;
