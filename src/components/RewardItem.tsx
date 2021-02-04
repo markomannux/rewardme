@@ -16,7 +16,7 @@ const RewardItem: React.FC<RewardItemProps> = ({reward, count, onPress}) => {
 
   let badge
   if (count) {
-    badge = <IonBadge>{count}</IonBadge>
+    badge = <IonBadge color="success">{count}</IonBadge>
   }
 
   return (
@@ -24,9 +24,7 @@ const RewardItem: React.FC<RewardItemProps> = ({reward, count, onPress}) => {
       <IonLabel>
         {reward.name}
       </IonLabel>
-      <IonBadge>
-        {badge}
-      </IonBadge>
+      {badge}
     </IonItem>
     )}
 

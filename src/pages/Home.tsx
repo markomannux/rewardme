@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonItem, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonButton, IonIcon, IonLabel, IonAlert } from '@ionic/react';
+import React, { useEffect, useState } from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonItem, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonButton, IonIcon, IonLabel, IonAlert, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
 import LogCard from '../components/LogCard'
 import './Home.css';
 import Achievement from '../model/Achievement';
@@ -9,6 +9,7 @@ import TaskService from '../services/task-service'
 import Task from '../model/Task';
 import { flash } from 'ionicons/icons'
 import useStore from '../hooks/use-store-hook';
+import { resourceLimits } from 'worker_threads';
 
 const Home: React.FC = () => {
 
@@ -20,23 +21,39 @@ const Home: React.FC = () => {
   const [achievements, setAchievements] = useState(emptyAchievements);
   const [achievementToDelete, setAchievementToDelete] = useState<Achievement>();
   const [showAlert, setShowAlert] = useState(false)
+  const [disableInfiniteScroll, setDisableInfiniteScroll] = useState<boolean>(false);
 
-  const getAchievements = () => { 
-    achievementService.list()
-    .then(result => {
-      return result.sort((a, b) => {
-        if (b.date < a.date) return -1
-        else if (a.date === b.date) return 0
-        else return 1
-      })
-    })
-    .then(result => {
-      setAchievements(result)
-    },
-    err => console.log(err))
+  const [offset, setOffset] = useState<number>(0)
+
+  const getAchievements = async () => { 
+
+    const fetched: Achievement[] = []
+    let cursor = await achievementService.openCursor('dateIndex', null, 'prev')
+
+    if (cursor) {
+      for (let index = 0; index < offset; index++) {
+        if (cursor) {
+          cursor = await cursor.continue()
+        }
+      }
+      for (let index = 0; index < 5; index++) {
+        if(cursor) {
+          fetched.push(cursor.value)
+          cursor = await cursor.continue()
+        }
+      }
+    }
+    setOffset(offset + 5)
+
+    if (fetched && fetched.length > 0) {
+      setAchievements([...achievements, ...fetched])
+      setDisableInfiniteScroll(fetched.length < 5)
+    } else {
+      setDisableInfiniteScroll(true)
+    }
   }
 
-  const getTasks = () => {
+  const getTasks = async () => {
     taskService.list()
     .then(result => {
       setTasks(result)
@@ -46,6 +63,15 @@ const Home: React.FC = () => {
 
   useStore(achievementService, getAchievements)
   useStore(taskService, getTasks)
+
+  async function searchNext($event: CustomEvent<void>) {
+
+      window.setTimeout(async () => {
+        await getAchievements();
+        ($event.target as HTMLIonInfiniteScrollElement).complete();
+      }, 600)
+
+  }
 
   let taskList
   if (tasks.length > 0) {
@@ -71,13 +97,13 @@ const Home: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="success">
           <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
+      <IonHeader collapse="condense">
+          <IonToolbar color="success">
             <IonTitle size="large">Home</IonTitle>
           </IonToolbar>
         </IonHeader>
@@ -89,9 +115,10 @@ const Home: React.FC = () => {
 
         <section className="rewardme-cta">
           <IonLabel>
-            Add an achievement on the fly
+            Done something epic and unique?<br/>
+            Add it here!
           </IonLabel>
-          <IonButton expand="block" routerLink="/home/instatask">
+          <IonButton expand="block" routerLink="/home/instatask" color="success">
             <IonIcon slot="start" icon={flash} />
             Instatask
           </IonButton>
@@ -105,6 +132,16 @@ const Home: React.FC = () => {
           setAchievementToDelete(achievement)
           setShowAlert(true)
         }}></LogCard>)}
+
+        <IonInfiniteScroll threshold="100px"
+        disabled={disableInfiniteScroll}
+        onIonInfinite={(e: CustomEvent<void>) => searchNext(e)}>
+          <IonInfiniteScrollContent
+            loadingText="Loading more stuff you should be proud of" 
+          >
+
+          </IonInfiniteScrollContent>
+        </IonInfiniteScroll>
         <IonAlert
         isOpen={showAlert}
         onDidDismiss={() => setShowAlert(false)}

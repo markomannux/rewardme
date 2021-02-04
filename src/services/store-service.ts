@@ -25,9 +25,15 @@ export default class StoreService<T extends Storable> extends EventEmitter {
         return db1.getAll(this.storeName)
     }
 
-    listFromIndex = async (indexName: string, value: any) : Promise<T[]> => {
+    listFromIndex = async (indexName: string, query: any) : Promise<T[]> => {
         const db1 = await this.open();
-        return db1.getAllFromIndex(this.storeName, indexName, value)
+        return db1.getAllFromIndex(this.storeName, indexName, query)
+    }
+
+    openCursor = async (indexName: string, query?: any, direction?: "next" | "nextunique" | "prev" | "prevunique" | undefined) => {
+        const db1 = await this.open();
+        const index = db1.transaction(this.storeName).store.index(indexName)
+        return await index.openCursor(query, direction)
     }
 
     get = async (id: string) : Promise<T> => {
