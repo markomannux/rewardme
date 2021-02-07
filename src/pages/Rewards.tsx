@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import Reward from '../model/Reward';
 import RewardCard from '../components/RewardCard';
 import RewardService from '../services/reward-service';
 import { add, trophy } from 'ionicons/icons';
 import useStore from '../hooks/use-store-hook';
+import RewardItem from '../components/RewardItem';
 
 const Rewards: React.FC = () => {
 
@@ -12,6 +13,7 @@ const Rewards: React.FC = () => {
   const [rewards, setRewards] = useState<Reward[]>()
   const [selectedReward, setSelectedReward] = useState<Reward>()
   const [showModal, setShowModal] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const [rewardNameInput, setRewardNameInput] = useState<string | null>()
 
   useStore(rewardService, () => {
@@ -56,41 +58,41 @@ const Rewards: React.FC = () => {
 
   let buttons
   if (selectedReward) {
-    buttons = [<IonButton onClick={() => addReward()} expand="block">Update</IonButton>,
-               <IonButton color="danger" onClick={() => deleteReward()} expand="block">Delete</IonButton>]
+    buttons = [<IonButton color="success" onClick={() => addReward()} expand="block">Update</IonButton>,
+               <IonButton color="danger" onClick={() => setShowAlert(true)} expand="block">Delete</IonButton>]
   } else {
-    buttons = <IonButton onClick={() => addReward()} expand="block">Add</IonButton>
+    buttons = <IonButton color="success" onClick={() => addReward()} expand="block">Add</IonButton>
   }
 
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="success">
           <IonTitle>Rewards</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
-          <IonToolbar>
+          <IonToolbar color="success">
             <IonTitle size="large">Rewards</IonTitle>
           </IonToolbar>
         </IonHeader>
         {rewards?.map((reward) => {
-          return <RewardCard key={reward.id} reward={reward} onPress={() => {
+          return <RewardItem key={reward.id} reward={reward} onPress={() => {
             setSelectedReward(reward)
             setRewardNameInput(reward.name)
             setShowModal(true)
-          }}></RewardCard>
+          }}></RewardItem>
         })}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton onClick={() => setShowModal(true)}>
+          <IonFabButton color="danger" onClick={() => setShowModal(true)}>
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>
          <IonModal isOpen={showModal} cssClass='my-custom-class'>
           <IonHeader>
-            <IonToolbar>
-              <IonTitle>Add a Reward</IonTitle>
+            <IonToolbar color="success">
+              <IonTitle>{selectedReward? 'Edit reward' : 'Add a new reward'}</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => {
                     clearModal()
@@ -107,6 +109,25 @@ const Rewards: React.FC = () => {
               </IonItem>
             </IonList>
             {buttons}
+              <IonAlert
+              isOpen={showAlert}
+              onDidDismiss={() => setShowAlert(false)}
+              cssClass='my-custom-class'
+              header={'Delete Reward'}
+              message={'Do you really want to delete this reward?'}
+              buttons={[{
+                text: "Nope",
+                role: 'cancel'
+              },
+              {
+                text: "Yes, please!",
+                handler: () => {
+                  if (selectedReward) {
+                    deleteReward()
+                  }
+                }
+              }]}
+            />
           </IonContent>
         </IonModal>
       </IonContent>

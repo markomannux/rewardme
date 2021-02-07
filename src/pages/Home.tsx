@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonItem, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonButton, IonIcon, IonLabel, IonAlert, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonItem, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonButton, IonIcon, IonLabel, IonAlert, IonInfiniteScroll, IonInfiniteScrollContent, IonList } from '@ionic/react';
 import LogCard from '../components/LogCard'
 import './Home.css';
 import Achievement from '../model/Achievement';
@@ -44,19 +44,15 @@ const Home: React.FC = () => {
   useStore(taskService, getTasks)
 
   async function searchNext($event: CustomEvent<void>) {
-
-      window.setTimeout(async () => {
-        await getAchievements();
-        ($event.target as HTMLIonInfiniteScrollElement).complete();
-      }, 600)
-
+    await getAchievements();
+    ($event.target as HTMLIonInfiniteScrollElement).complete();
   }
 
   let taskList
   if (tasks.length > 0) {
-    taskList = (<IonCard>
+    taskList = (<IonList>
           {tasks.map(task => <TaskListItem key={task.id} {...task}/>)}
-        </IonCard>)
+        </IonList>)
   } else {
     taskList = <IonCard>
           <IonCardHeader>
@@ -94,7 +90,7 @@ const Home: React.FC = () => {
 
         <section className="rewardme-cta">
           <IonLabel>
-            Done something epic and unique?<br/>
+            Did something epic and unique?<br/>
             Add it here!
           </IonLabel>
           <IonButton expand="block" routerLink="/home/instatask" color="success">

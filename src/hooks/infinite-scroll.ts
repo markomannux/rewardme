@@ -2,7 +2,7 @@ import { useState } from "react";
 
 
 type InfiniteScrollHook = (getCursor: Function, updateResult: Function) => [boolean, () => void] 
-const useInfiniteScroll: InfiniteScrollHook = (getCursor: Function, updateResult: Function) => {
+const useInfiniteScroll: InfiniteScrollHook = (getCursor: Function, updateResult: Function, max: number = 5) => {
 
   const [disableInfiniteScroll, setDisableInfiniteScroll] = useState<boolean>(false);
   const [offset, setOffset] = useState<number>(0)
@@ -19,18 +19,18 @@ const useInfiniteScroll: InfiniteScrollHook = (getCursor: Function, updateResult
           cursor = await cursor.continue()
         }
       }
-      for (let index = 0; index < 5; index++) {
+      for (let index = 0; index < max; index++) {
         if(cursor) {
           fetched.push(cursor.value)
           cursor = await cursor.continue()
         }
       }
     }
-    setOffset(offset + 5)
+    setOffset(offset + max)
 
     if (fetched && fetched.length > 0) {
       updateResult(fetched)
-      setDisableInfiniteScroll(fetched.length < 5)
+      setDisableInfiniteScroll(fetched.length < max)
     } else {
       setDisableInfiniteScroll(true)
     }

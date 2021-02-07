@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonModal, IonPage, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonListHeader, IonModal, IonPage, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import Task from '../model/Task';
 import TaskCard from '../components/TaskCard';
 import TaskService from '../services/task-service';
 import { add, bag, cart, hammer, barbell, walk, book, water } from 'ionicons/icons';
 import useStore from '../hooks/use-store-hook';
+import TaskItem from '../components/TaskItem';
 
 const Tasks: React.FC = () => {
 
@@ -12,6 +13,7 @@ const Tasks: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>()
   const [selectedTask, setSelectedTask] = useState<Task>()
   const [showModal, setShowModal] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const [taskNameInput, setTaskNameInput] = useState<string | null>()
   const [taskIconInput, setTaskIconInput] = useState<string>(book)
 
@@ -61,41 +63,41 @@ const Tasks: React.FC = () => {
 
   let buttons
   if (selectedTask) {
-    buttons = [<IonButton key="button-add" onClick={() => addTask()} expand="block">Update</IonButton>,
-               <IonButton key="button-delete" color="danger" onClick={() => deleteTask()} expand="block">Delete</IonButton>]
+    buttons = [<IonButton key="button-add" color="success" onClick={() => addTask()} expand="block">Update</IonButton>,
+               <IonButton key="button-delete" color="danger" onClick={() => setShowAlert(true)} expand="block">Delete</IonButton>]
   } else {
-    buttons = <IonButton onClick={() => addTask()} expand="block">Add</IonButton>
+    buttons = <IonButton color="success" onClick={() => addTask()} expand="block">Add</IonButton>
   }
 
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="success">
           <IonTitle>Tasks</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
-          <IonToolbar>
+          <IonToolbar color="success">
             <IonTitle size="large">Tasks</IonTitle>
           </IonToolbar>
         </IonHeader>
         {tasks?.map((task) => {
-          return <TaskCard key={task.id} task={task} onPress={() => {
+        return <TaskItem key={task.id} task={task} onPress={() => {
             setSelectedTask(task)
             setTaskNameInput(task.name)
             setShowModal(true)
-          }}></TaskCard>
+          }}></TaskItem>
         })}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton onClick={() => setShowModal(true)}>
+          <IonFabButton color="danger" onClick={() => setShowModal(true)}>
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>
          <IonModal isOpen={showModal} cssClass='my-custom-class'>
           <IonHeader>
-            <IonToolbar>
-              <IonTitle>Add a Task</IonTitle>
+            <IonToolbar color="success">
+              <IonTitle>{selectedTask? 'Edit task' : 'Add a new task'}</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => 
                   clearModal()
@@ -146,6 +148,26 @@ const Tasks: React.FC = () => {
               </IonRadioGroup>
             </IonList>
             {buttons}
+              <IonAlert
+              isOpen={showAlert}
+              onDidDismiss={() => setShowAlert(false)}
+              cssClass='my-custom-class'
+              header={'Delete Task'}
+              message={'Do you really want to delete this task?'}
+              buttons={[{
+                text: "Nope",
+                role: 'cancel'
+              },
+              {
+                text: "Yes, please!",
+                handler: () => {
+                  if (selectedTask) {
+                    deleteTask()
+                  }
+                }
+              }]}
+            />
+
           </IonContent>
         </IonModal>
       </IonContent>

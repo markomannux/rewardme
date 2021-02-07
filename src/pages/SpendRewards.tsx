@@ -66,13 +66,13 @@ const SpendRewards: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="success">
-          <IonTitle>Available Rewards</IonTitle>
+          <IonTitle>Gained Rewards</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar color="success">
-            <IonTitle size="large">Available Rewards</IonTitle>
+            <IonTitle size="large">Gained Rewards</IonTitle>
           </IonToolbar>
         </IonHeader>
         {rewardsList()}

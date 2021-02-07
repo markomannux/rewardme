@@ -19,7 +19,7 @@ const TaskCard: React.FC<TaskCardProps> = ({task, onPress}) => {
         <IonCardHeader>
             <IonCardTitle>
                 <IonIcon icon={task.icon}></IonIcon>
-                <IonLabel>{task.name}</IonLabel>
+                <IonLabel> {task.name}</IonLabel>
             </IonCardTitle>
         </IonCardHeader>
     </IonCard>

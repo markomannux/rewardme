@@ -7,7 +7,8 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
-  IonItem
+  IonItem,
+  IonLabel
 } from '@ionic/react';
 import Achievement from '../model/Achievement';
 import './LogCard.css';
@@ -41,9 +42,16 @@ const LogCard: React.FC<LogCardProps> = ({achievement, onPressDelete}) => {
             <IonIcon icon={achievement.task.icon} slot="start" />
         </IonCardHeader>
         <IonButton fill="outline" slot="end">Delete</IonButton>
-      <IonCardContent>Your reward: {achievement.reward.name}</IonCardContent>
+      <IonCardContent>
+        <div className="small ion-color-medium">
+          Your reward: 
+        </div>
+        <div>
+          {achievement.reward.name}
+        </div>
+      </IonCardContent>
       <IonItem lines="none">
-        <IonButton fill="outline" color="danger" slot="start" onClick={() => onPressDelete()}>Delete</IonButton>
+        <IonButton fill="outline" color="medium" slot="start" onClick={() => onPressDelete()}>Delete</IonButton>
       </IonItem>
       {stamp}
     </IonCard>
