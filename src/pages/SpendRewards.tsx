@@ -33,7 +33,6 @@ const SpendRewards: React.FC = () => {
   const spendReward = async (reward: Reward) => {
     const spentAchievement = await achievementService.spendReward(reward)
     if (spentAchievement) {
-      console.log(spentAchievement);
       setSpentAchievement(spentAchievement)
       show()
     }

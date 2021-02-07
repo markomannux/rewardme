@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonItem, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonButton, IonIcon, IonLabel, IonAlert, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
 import LogCard from '../components/LogCard'
 import './Home.css';
@@ -9,7 +9,8 @@ import TaskService from '../services/task-service'
 import Task from '../model/Task';
 import { flash } from 'ionicons/icons'
 import useStore from '../hooks/use-store-hook';
-import { resourceLimits } from 'worker_threads';
+import useInfiniteScroll from '../hooks/infinite-scroll';
+
 
 const Home: React.FC = () => {
 
@@ -21,37 +22,15 @@ const Home: React.FC = () => {
   const [achievements, setAchievements] = useState(emptyAchievements);
   const [achievementToDelete, setAchievementToDelete] = useState<Achievement>();
   const [showAlert, setShowAlert] = useState(false)
-  const [disableInfiniteScroll, setDisableInfiniteScroll] = useState<boolean>(false);
 
-  const [offset, setOffset] = useState<number>(0)
-
-  const getAchievements = async () => { 
-
-    const fetched: Achievement[] = []
+  const [disableInfiniteScroll, getAchievements] = useInfiniteScroll(async () => {
     let cursor = await achievementService.openCursor('dateIndex', null, 'prev')
-
-    if (cursor) {
-      for (let index = 0; index < offset; index++) {
-        if (cursor) {
-          cursor = await cursor.continue()
-        }
-      }
-      for (let index = 0; index < 5; index++) {
-        if(cursor) {
-          fetched.push(cursor.value)
-          cursor = await cursor.continue()
-        }
-      }
-    }
-    setOffset(offset + 5)
-
-    if (fetched && fetched.length > 0) {
+    return cursor
+  },
+  async (fetched: Achievement[]) => {
       setAchievements([...achievements, ...fetched])
-      setDisableInfiniteScroll(fetched.length < 5)
-    } else {
-      setDisableInfiniteScroll(true)
-    }
-  }
+  }) 
+
 
   const getTasks = async () => {
     taskService.list()
