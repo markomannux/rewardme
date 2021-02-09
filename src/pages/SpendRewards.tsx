@@ -13,9 +13,8 @@ const SpendRewards: React.FC = () => {
   const [rewards, setRewards] = useState<[Reward, number][]>()
   const [showAlert, setShowAlert] = useState(false)
   const [selectedReward, setSelectedReward] = useState<Reward>()
-  const [spentAchievement, setSpentAchievement] = useState<Achievement>()
 
-  const [shown, show, hide, undo] = useUndoAction(spentAchievement, (achievement: Achievement) => {
+  const [shown, show, hide, setUndoItem, undo] = useUndoAction((achievement: Achievement) => {
     if (achievement) {
       achievementService.unspendReward(achievement)
     }
@@ -33,7 +32,7 @@ const SpendRewards: React.FC = () => {
   const spendReward = async (reward: Reward) => {
     const spentAchievement = await achievementService.spendReward(reward)
     if (spentAchievement) {
-      setSpentAchievement(spentAchievement)
+      setUndoItem(spentAchievement)
       show()
     }
   }

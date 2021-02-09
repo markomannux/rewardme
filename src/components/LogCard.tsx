@@ -19,10 +19,11 @@ const formatDate = (date: Date) => {
 
 interface LogCardProps {
   achievement: Achievement
-  onPressDelete: Function
+  onPressDelete: Function,
+  onPressSpend: Function
 }
 
-const LogCard: React.FC<LogCardProps> = ({achievement, onPressDelete}) => {
+const LogCard: React.FC<LogCardProps> = ({achievement, onPressDelete, onPressSpend}) => {
 
   let stamp
   const stampStyle = {
@@ -31,6 +32,11 @@ const LogCard: React.FC<LogCardProps> = ({achievement, onPressDelete}) => {
   if (achievement.spent === 'y') {
     stamp = <img src="/assets/stamp.png" className="stamp" style={stampStyle}></img>
   }
+
+  const buttons = <IonItem lines='none'>
+        <IonButton fill="outline" color="success" slot="start" onClick={() => onPressSpend()}>Spend</IonButton>
+        <IonButton fill="outline" color="medium" slot="start" onClick={() => onPressDelete()}>Delete</IonButton>
+  </IonItem>
 
   return (
    <IonCard>
@@ -50,9 +56,7 @@ const LogCard: React.FC<LogCardProps> = ({achievement, onPressDelete}) => {
           {achievement.reward.name}
         </div>
       </IonCardContent>
-      <IonItem lines="none">
-        <IonButton fill="outline" color="medium" slot="start" onClick={() => onPressDelete()}>Delete</IonButton>
-      </IonItem>
+      {achievement.spent !== 'y'? buttons : ''}
       {stamp}
     </IonCard>
   );

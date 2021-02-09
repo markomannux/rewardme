@@ -3,10 +3,11 @@ import { useState } from "react"
 /*
  * This hook mantain the status about undoable actions
  */
-type UndoActionHook = (undoItem: any, undoHandler: Function) => [boolean, () => void, () => void, () => void]
-const useUndoAction: UndoActionHook = (undoItem: any, undoHandler: Function) => {
+type UndoActionHook = (undoHandler: Function) => [boolean, () => void, () => void, any, () => void]
+const useUndoAction: UndoActionHook = (undoHandler: Function) => {
   
   const [shown, setShown] = useState(false)
+  const [undoItem, setUndoItem] = useState()
 
   const show = () => {
     setShown(true)
@@ -20,7 +21,7 @@ const useUndoAction: UndoActionHook = (undoItem: any, undoHandler: Function) => 
     undoHandler(undoItem)
   }
 
-  return [shown, show, hide, undo]
+  return [shown, show, hide, setUndoItem, undo]
 }
 
 export default useUndoAction

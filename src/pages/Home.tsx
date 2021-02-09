@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonItem, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonButton, IonIcon, IonLabel, IonAlert, IonInfiniteScroll, IonInfiniteScrollContent, IonList } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonItem, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonButton, IonIcon, IonLabel, IonAlert, IonInfiniteScroll, IonInfiniteScrollContent, IonList, IonToast } from '@ionic/react';
 import LogCard from '../components/LogCard'
 import './Home.css';
 import Achievement from '../model/Achievement';
@@ -10,6 +10,7 @@ import Task from '../model/Task';
 import { flash } from 'ionicons/icons'
 import useStore from '../hooks/use-store-hook';
 import useInfiniteScroll from '../hooks/infinite-scroll';
+import useUndoAction from '../hooks/undo-action-hook'
 
 
 const Home: React.FC = () => {
@@ -30,7 +31,12 @@ const Home: React.FC = () => {
   async (fetched: Achievement[]) => {
       setAchievements([...achievements, ...fetched])
   }) 
-
+  
+  const [shown, show, hide, setUndoItem, undo] = useUndoAction((achievement: Achievement) => {
+    if (achievement) {
+      achievementService.unspendReward(achievement)
+    }
+  })
 
   const getTasks = async () => {
     taskService.list()
@@ -103,10 +109,22 @@ const Home: React.FC = () => {
           <h2>Log</h2>
         </IonItem>
 
-        {achievements.map(achievement => <LogCard key={achievement.id} achievement={achievement} onPressDelete={() => {
-          setAchievementToDelete(achievement)
-          setShowAlert(true)
-        }}></LogCard>)}
+        {achievements.map(achievement =>
+        <LogCard
+            key={achievement.id}
+            achievement={achievement}
+            onPressDelete={() => {
+              setAchievementToDelete(achievement)
+              setShowAlert(true)
+            }}
+            onPressSpend={async () => {
+              const spentAchievement = await achievementService.spendReward(achievement.reward)
+              if (spentAchievement) {
+                setUndoItem(spentAchievement)
+                show()
+              }
+            }}
+        ></LogCard>)}
 
         <IonInfiniteScroll threshold="100px"
         disabled={disableInfiniteScroll}
@@ -139,6 +157,23 @@ const Home: React.FC = () => {
       />
 
       </IonContent>
+      <IonToast
+        isOpen={shown}
+        onDidDismiss={() => hide()}
+        message="Reward spent"
+        position="top"
+        duration={4000}
+        buttons={[
+          {
+            side: 'end',
+            text: 'Undo',
+            role: 'cancel',
+            handler: () => {
+              undo()
+            }
+          }
+        ]}
+      />
     </IonPage>
   );
 };

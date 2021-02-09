@@ -87,7 +87,7 @@ const InstaTask: React.FC<CompleteTaskProps> = ({match}) => {
         </IonItem>
         <IonList>
           <IonListHeader>
-            Choose one suitable reward
+            Choose a suitable reward
           </IonListHeader>
           {rewards?.map((reward) => {
             return <RewardItem key={reward.id} reward={reward} onPress={() => {
