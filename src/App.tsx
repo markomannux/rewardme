@@ -14,7 +14,7 @@ import {
   IonTabs
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { home, trophy, settings } from 'ionicons/icons';
+import { home, trophy, settings, arrowForward } from 'ionicons/icons';
 import Home from './pages/Home';
 import Rewards from './pages/Rewards';
 import Settings from './pages/Settings';
@@ -78,21 +78,33 @@ const App: React.FC = () => {
     return (
 
     <IonApp>
-        <IonContent fullscreen>
+        <IonContent color="success" fullscreen scrollY={false} className="ion-padding">
             <IonSlides pager={true} options={slideOpts}>
-            <IonSlide>
-                <h1>Setup your tasks</h1>
-            </IonSlide>
-            <IonSlide>
-                <h1>Define some rewards for you</h1>
-            </IonSlide>
-            <IonSlide>
-                <h1>Complete tasks and earn rewards</h1>
-            </IonSlide>
-            <IonSlide>
-                <h1>Enjoy your rewards!</h1>
-                <IonButton onClick={(e) => dismissTutorial()}>Start</IonButton>
-            </IonSlide>
+              <IonSlide>
+                  <div className="slide">
+                    <h1>Setup your tasks</h1>
+                    <p>Tell me the things you want to do but don't feel like to</p>
+                  </div>
+              </IonSlide>
+              <IonSlide>
+                  <div className="slide">
+                    <h1>Define your rewards</h1>
+                    <p>List the little things that make you happy</p>
+                  </div>
+              </IonSlide>
+              <IonSlide>
+                  <div className="slide">
+                    <h1>Now earn them!</h1>
+                    <p>Complete tasks and earn your reward. See how they stack up while you makes the things important to you</p>
+                  </div>
+              </IonSlide>
+              <IonSlide>
+                  <div className="slide">
+                    <h1>Enjoy your rewards!</h1>
+                    <p>It's not all work and no play. Pick the rewards you earned and enjoy them!</p>
+                    <IonButton fill="clear" color="tertiary" onClick={(e) => dismissTutorial()}>Start<IonIcon slot="end" icon={arrowForward}></IonIcon></IonButton>
+                  </div>
+              </IonSlide>
             </IonSlides>
         </IonContent>
 
