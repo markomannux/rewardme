@@ -5,14 +5,15 @@ import './Settings.css';
 import AchievementService from '../services/achievement-service';
 import TaskService from '../services/task-service';
 import RewardService from '../services/reward-service';
-import { init, clear } from '../services/database-service'
 import useStore from '../hooks/use-store-hook';
 import ConfigService from '../services/config-service'
+import DatabaseService from '../services/database-service'
 
 const Settings: React.FC = () => {
 
   const configService = ConfigService()
   const taskService = TaskService()
+  const databaseService = DatabaseService()
   const achievementService = AchievementService()
   const rewardService = RewardService()
   const [tutorial, setTutorial] = useState(false)
@@ -33,12 +34,16 @@ const Settings: React.FC = () => {
     })
   })
 
+  async function resetDb() {
+    await databaseService.reset()
+  }
+
   async function clearDb() {
-    await clear()
+    await databaseService.clear()
   }
 
   async function initDb() {
-    await init()
+    await databaseService.init()
     const reward1 = {
               id: '1',
               icon: water,
@@ -109,6 +114,7 @@ const Settings: React.FC = () => {
             <IonTitle size="large">Settings</IonTitle>
           </IonToolbar>
         </IonHeader>
+        <IonButton expand="block" onClick={resetDb}>Reset database</IonButton>
         <IonButton expand="block" onClick={clearDb}>Clear db</IonButton>
         <IonButton expand="block" onClick={initDb}>Init db</IonButton>
         <IonList>

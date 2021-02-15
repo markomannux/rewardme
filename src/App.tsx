@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
@@ -39,14 +39,11 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import './pages/Tutorial.css'
 import CompleteTask from './pages/CompleteTask';
-import { init } from './services/database-service'
 import SpendRewards from './pages/SpendRewards';
 import Tasks from './pages/Tasks';
 import InstaTask from './pages/InstaTask';
 import ConfigService from './services/config-service'
 import useStore from './hooks/use-store-hook';
-
-init()
 
 
 const App: React.FC = () => {

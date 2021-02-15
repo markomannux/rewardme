@@ -24,6 +24,7 @@ class AchievementService extends StoreService<Achievement> {
         }
         return new Promise((resolve, reject) => {
             resolve(res)
+            db1.close()
         })
     }
 
